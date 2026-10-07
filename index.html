@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>油耗计算器</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f4f6f8;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; padding: 16px;
+  }
+  .card {
+    background: #fff; border: 3px solid #222; border-radius: 12px;
+    width: 100%; max-width: 420px; padding: 24px;
+    box-shadow: 6px 6px 0 #222;
+  }
+  h1 { font-size: 20px; text-align: center; margin-bottom: 20px; }
+  .row {
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 2px solid #222; padding: 14px 4px;
+  }
+  .row:first-of-type { border-top: none; }
+  .label { font-size: 17px; font-weight: bold; white-space: nowrap; }
+  .field { display: flex; align-items: center; gap: 6px; }
+  input {
+    width: 110px; padding: 8px 10px; font-size: 17px;
+    border: 2px solid #222; border-radius: 8px; text-align: right;
+    outline: none;
+  }
+  input:focus { border-color: #e67e22; }
+  .unit { font-size: 15px; }
+  .result {
+    background: #fff8ef; border: 2px dashed #e67e22; border-radius: 10px;
+    margin-top: 18px; padding: 16px;
+  }
+  .result .row { border-top: 1px dashed #ccc; padding: 10px 4px; }
+  .result .row:first-of-type { border-top: none; }
+  .val { font-size: 20px; font-weight: bold; color: #d35400; }
+  .hint { font-size: 12px; color: #999; text-align: center; margin-top: 10px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>🚗 油耗计算器</h1>
+
+    <div class="row">
+      <span class="label">今日油价</span>
+      <div class="field">
+        <input id="price" type="number" step="0.01" min="0" placeholder="0.00">
+        <span class="unit">元/升</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <span class="label">共加了多少钱</span>
+      <div class="field">
+        <input id="total" type="number" step="0.01" min="0" placeholder="0.00">
+        <span class="unit">元</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <span class="label">行驶里程</span>
+      <div class="field">
+        <input id="km" type="number" step="0.1" min="0" placeholder="0.0">
+        <span class="unit">公里</span>
+      </div>
+    </div>
+
+    <div class="result">
+      <div class="row">
+        <span class="label">加油量</span>
+        <div class="field"><span class="val" id="liters">--</span><span class="unit">升</span></div>
+      </div>
+      <div class="row">
+        <span class="label">油耗</span>
+        <div class="field"><span class="val" id="per100">--</span><span class="unit">升/百公里</span></div>
+      </div>
+      <div class="row">
+        <span class="label">每公里油费</span>
+        <div class="field"><span class="val" id="perKm">--</span><span class="unit">元/公里</span></div>
+      </div>
+    </div>
+
+    <div class="hint">填写上方三项，结果自动计算</div>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  function calc() {
+    const price = parseFloat($('price').value);
+    const total = parseFloat($('total').value);
+    const km    = parseFloat($('km').value);
+
+    // 加油量由“总金额 ÷ 油价”反推
+    const liters = (price > 0 && total > 0) ? total / price : null;
+    // 油耗（升/百公里）
+    const per100 = (liters !== null && km > 0) ? liters / km * 100 : null;
+    // 每公里油费
+    const perKm  = (total > 0 && km > 0) ? total / km : null;
+
+    $('liters').textContent = liters !== null ? liters.toFixed(2) : '--';
+    $('per100').textContent = per100 !== null ? per100.toFixed(2) : '--';
+    $('perKm').textContent  = perKm  !== null ? perKm.toFixed(3) : '--';
+  }
+
+  ['price', 'total', 'km'].forEach(id => $(id).addEventListener('input', calc));
+</script>
+</body>
+</html>
